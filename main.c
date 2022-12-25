@@ -30,7 +30,6 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Lab Test 2");
 
 
-
     // Define the camera to look into our 3d world
     Camera camera = { 0 };
     camera.position = (Vector3){ 50.0f, 50.0f, 50.0f }; // Camera position
@@ -69,7 +68,7 @@ int main(void)
     struct objectData object[3][10];
 
     //total Objects
-    int totalType = 1;
+    int totalType = 1; //Increment if add new type of models
     int totalTable = 3;
 
     
@@ -128,11 +127,15 @@ int main(void)
         
 
         //Set bounding Box
-        for(int i = 0; i < totalTable; i++)
+        for(int h = 0; h< totalType; h++)
         {
-            object[0][i].bounds = (BoundingBox){(Vector3){ object[0][i].position.x -  object[0][i].size.x/2,  object[0][i].position.y - object[0][i].size.y/2,  object[0][i].position.z -  object[0][i].size.z/2 },
-                                        (Vector3){ object[0][i].position.x +  object[0][i].size.x/2,  object[0][i].position.y +  object[0][i].size.y/2,  object[0][i].position.z +  object[0][i].size.z/2 }}; 
+            for(int i = 0; i < totalTable; i++)
+            {
+                object[0][i].bounds = (BoundingBox){(Vector3){ object[h][i].position.x -  object[h][i].size.x/2,  object[h][i].position.y - object[h][i].size.y/2,  object[h][i].position.z -  object[h][i].size.z/2 },
+                                            (Vector3){ object[h][i].position.x +  object[h][i].size.x/2,  object[h][i].position.y +  object[h][i].size.y/2,  object[h][i].position.z +  object[h][i].size.z/2 }}; 
+            }
         }
+           
 
     
         //Select Object
@@ -150,24 +153,26 @@ int main(void)
                 bool foundModel = false; //to avoid higlighting multiple objects
                 isGUIOpen = false;
                 currentlySelecting = false;
-                for(int i = 0; i < totalTable; i++)
+                for(int h = 0; h < totalType; h++)
                 {
-                    if(GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), object[0][i].bounds).hit && !foundModel)
+                    for(int i = 0; i < totalTable; i++)
                     {
-                        object[0][i].isSelected = true;
-                        selectedType = 0;
-                        selectedId = i;
-                        currentlySelecting = true;
-                        foundModel = true;
-                        isGUIOpen = true;
+                        if(GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), object[h][i].bounds).hit && !foundModel)
+                        {
+                            object[h][i].isSelected = true;
+                            selectedType = h;
+                            selectedId = i;
+                            currentlySelecting = true;
+                            foundModel = true;
+                            isGUIOpen = true;
+                        }
+                        else
+                        {
+                            object[h][i].isSelected = false; 
+                        }
                     }
-                    else
-                    {
-                        object[0][i].isSelected = false; 
-                    }
-
                 }
-           
+
             }
         }
         
@@ -218,18 +223,21 @@ int main(void)
 
 
                 //Draw Models
-                for(int i = 0; i < totalTable; i++)
+                for(int h = 0; h< totalType; h++)
                 {
-                    DrawModel(object[0][i].model,object[0][i].position,object[0][i].scale,object[0][i].color);
-                    DrawModelWires(object[0][i].model,object[0][i].position,object[0][i].scale,BLACK);
-                    
-                    if(object[0][i].isSelected)
+                    for(int i = 0; i < totalTable; i++)
                     {
-                        DrawBoundingBox(object[0][i].bounds,GREEN);
+                        DrawModel(object[h][i].model,object[h][i].position,object[h][i].scale,object[h][i].color);
+                        DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
+                        
+                        if(object[h][i].isSelected)
+                        {
+                            DrawBoundingBox(object[h][i].bounds,GREEN);
+                        }
+                        
                     }
-                  
                 }
-               
+              
                 DrawGrid(50, 10.0f);         // Draw a grid
 
              
