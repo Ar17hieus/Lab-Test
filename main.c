@@ -1,16 +1,34 @@
+#define RAYGUI_IMPLEMENTATION
 #include "raylib.h"
+#include <stdio.h>
+#include <string.h>
+#include "raygui.h"
+
+struct objectData
+{
+    Model model;
+    Color color;
+    Vector3 position;
+    BoundingBox bounds;
+    Vector3 size;
+    float scale;
+    bool isSelected;
+};
+
 
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
+
 int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 1280;
+    const int screenHeight = 720;
 
-    InitWindow(screenWidth, screenHeight, "Lab 4");
+    InitWindow(screenWidth, screenHeight, "Lab Test 2");
+
 
     // Define the camera to look into our 3d world
     Camera camera = { 0 };
@@ -18,48 +36,84 @@ int main(void)
     camera.target = (Vector3){ 0.0f, 10.0f, 0.0f };     // Camera looking at point
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;                   // Camera mode type
+    camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
 
-    Model model[3];
-    model[0] = LoadModel("resources/models/obj/castle.obj");    // Load model 1
-    model[1] = LoadModel("resources/models/obj/market.obj");    // Load model 2
-                 
-    Texture2D texture = LoadTexture("resources/models/obj/castle_diffuse.png"); // Load model texture 1 
-    model[0].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Set map diffuse texture 1 
 
-    texture = LoadTexture("resources/models/obj/market_diffuse.png");
-    model[1].materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture; 
+    //Misc Variable
+    int selectedType = 0;
+    int selectedId = 0;
+    bool currentlySelecting = false;
+    bool isGUIOpen = false;
 
-    Vector3 position[3];
-    // Set model position 1
-    position[0].x = 0.0f; 
-    position[0].y = 0.0f; 
-    position[0].z = 0.0f;    
+    /** ======================================================================
+    INFO
+    HOW TO ADD OBJECT
+    1)Add variable to set max object
+    2)Load Models
+    3)Load Texture
+    4)Set Model's Default Position
+    5)Set Model's Size (Used to create bounding box)
+    6)Set Model's default value (for colors and isSelected)
+  
+    ARRAY GUIDE
+    object[x][y];
+    // x = object type (chair,table,etc2)
+    // y = object id (chair1,chair2,chair3, etc2)
+
+    Current Models
+    [0] - Tables
+    ======================================================================**/
+
+    //Declare Object
+    struct objectData object[3][10];
+
+    //total Objects
+    int totalType = 1; //Increment if add new type of models
+    int totalTable = 3;
+
     
-    // Set model position 2
-    position[1].x = 20.0f; 
-    position[1].y = 0.0f; 
-    position[1].z = 20.0f; 
+    //Load Models
+    //Tables
+    Model tempModel;
 
-    BoundingBox bounds[3];
+    tempModel = LoadModel("models/table.obj");
+    for(int i = 0; i<totalTable; i++)
+    {
+        object[0][i].model = tempModel; 
+        object[0][i].scale = 0.1f;
+    }
+    
 
-    Vector3 modelSize[3];
+    //Loads Texture
+    Texture2D tempTexture = LoadTexture("resources/models/obj/castle_diffuse.png"); // Load model texture 1 
 
-    modelSize[0].x = 30.0f;
-    modelSize[0].y = 30.0f;
-    modelSize[0].z = 30.0f;
+    tempTexture = LoadTexture("resources/table/tex/WoodSeemles1.png");
+    object[0][0].model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture = tempTexture; 
+    
+    
+    // Set model position
+    object[0][0].position = (Vector3){-10,6,30};
+    object[0][1].position = (Vector3){-10,6,0};
+    object[0][2].position = (Vector3){-10,6,-30};
 
-    modelSize[1].x = 20.0f;
-    modelSize[1].y = 25.0f;
-    modelSize[1].z = 20.0f;
 
+    // Set model Size (for bounding box)
+    for (int i = 0; i < totalTable; i++)
+    {
+        object[0][i].size = (Vector3){15,15,20};
+    }
+    
 
-    // NOTE: bounds are calculated from the original size of the model,
-    // if model is scaled on drawing, bounds must be also scaled
+    // set Object's default values
+    for (int i = 0; i < totalTable; i++)
+    {
+        object[0][i].color= WHITE;
+        object[0][i].isSelected= false;
+    }
 
+  
     SetCameraMode(camera, CAMERA_FREE);     // Set a free camera mode
 
-    int selected = 3;          // Selected object flag
     
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -71,50 +125,80 @@ int main(void)
         //----------------------------------------------------------------------------------
         UpdateCamera(&camera);
         
-        // Set model bounds 1
-        bounds[0]= (BoundingBox){(Vector3){position[0].x - modelSize[0].x/2, position[0].y - modelSize[0].y/20, position[0].z - modelSize[0].z/2},
-                                  (Vector3){position[0].x + modelSize[0].x/2, position[0].y + modelSize[0].y, position[0].z + modelSize[0].z/2}};
-                                
-                                 
-        // Set model bounds 2
-        bounds[1]= (BoundingBox){(Vector3){position[1].x - modelSize[1].x/2, position[1].y - modelSize[1].y/10, position[1].z - modelSize[1].z/2},
-                                (Vector3){position[1].x + modelSize[1].x/2, position[1].y + modelSize[1].y/2, position[1].z + modelSize[1].z/2}};
 
-        // Select model on mouse click
+        //Set bounding Box
+        for(int h = 0; h< totalType; h++)
+        {
+            for(int i = 0; i < totalTable; i++)
+            {
+                object[0][i].bounds = (BoundingBox){(Vector3){ object[h][i].position.x -  object[h][i].size.x/2,  object[h][i].position.y - object[h][i].size.y/2,  object[h][i].position.z -  object[h][i].size.z/2 },
+                                            (Vector3){ object[h][i].position.x +  object[h][i].size.x/2,  object[h][i].position.y +  object[h][i].size.y/2,  object[h][i].position.z +  object[h][i].size.z/2 }}; 
+            }
+        }
+           
+
+    
+        //Select Object
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
-            if (GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), bounds[0]).hit)
+            //Make sure that mouse is not using GUI
+            bool mouseInGUI = false;
+            if(GetMousePosition().x >(GetScreenWidth() -  GetScreenWidth()/4)) //Mouse is in GUI Panel
             {
-                selected = 0;
-            } 
-            else if(GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), bounds[1]).hit)
+                mouseInGUI = true;
+            }
+
+            if(!(mouseInGUI && isGUIOpen))
             {
-                selected = 1;
-            } 
-            else selected = 3;
+                bool foundModel = false; //to avoid higlighting multiple objects
+                isGUIOpen = false;
+                currentlySelecting = false;
+                for(int h = 0; h < totalType; h++)
+                {
+                    for(int i = 0; i < totalTable; i++)
+                    {
+                        if(GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), object[h][i].bounds).hit && !foundModel)
+                        {
+                            object[h][i].isSelected = true;
+                            selectedType = h;
+                            selectedId = i;
+                            currentlySelecting = true;
+                            foundModel = true;
+                            isGUIOpen = true;
+                        }
+                        else
+                        {
+                            object[h][i].isSelected = false; 
+                        }
+                    }
+                }
+
+            }
         }
+        
 
-
-        //Move model input
-       if (IsKeyDown(KEY_W))
-       {
-            position[selected].z ++;
-       }
-       else if(IsKeyDown(KEY_S))
-       {
-            position[selected].z --;
-       }
-       
-       
-       if (IsKeyDown(KEY_A))
-       {
-            position[selected].x ++;
-       }
-       else if(IsKeyDown(KEY_D))
-       {
-            position[selected].x --;
-       }
-
+        //Moving Objects
+        if (currentlySelecting)
+        {
+            if (IsKeyDown(KEY_W))
+            {
+                object[selectedType][selectedId].position.z++;
+            }
+            else if(IsKeyDown(KEY_S))
+            {
+                object[selectedType][selectedId].position.z--;
+            }
+        
+        
+            if (IsKeyDown(KEY_A))
+            {
+                object[selectedType][selectedId].position.x++;
+            }
+            else if(IsKeyDown(KEY_D))
+            {
+                object[selectedType][selectedId].position.x--;
+            }
+        }
        
         //----------------------------------------------------------------------------------
         // Draw
@@ -125,23 +209,62 @@ int main(void)
 
             BeginMode3D(camera);
 
-                DrawModel(model[0], position[0], 1.0f, WHITE);   
-                DrawModel(model[1], position[1], 1.0f, WHITE);       // Draw 3d model with texture
+                //Floor
+                DrawCube((Vector3){0,1,0},100,1,100,GRAY);
+                DrawCubeWires((Vector3){0,1,0},100,1,100,BLACK);
 
-                DrawGrid(20, 10.0f);         // Draw a grid
+                //Wall 1
+                DrawCube((Vector3){-50,26.5,1},5,50,97,WHITE);
+                DrawCubeWires((Vector3){-50,26.5,1},5,50,97,BLACK);
 
-                if (selected == 0) DrawBoundingBox(bounds[0], GREEN);  
-                else if (selected == 1) DrawBoundingBox(bounds[1], GREEN); // Draw selection box
+                //Wall 2
+                DrawCube((Vector3){1,26.5,-50},96.9,50,5,WHITE);
+                DrawCubeWires((Vector3){1,26.5,-50},96.9,50,5,BLACK);
+
+
+                //Draw Models
+                for(int h = 0; h< totalType; h++)
+                {
+                    for(int i = 0; i < totalTable; i++)
+                    {
+                        DrawModel(object[h][i].model,object[h][i].position,object[h][i].scale,object[h][i].color);
+                        DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
+                        
+                        if(object[h][i].isSelected)
+                        {
+                            DrawBoundingBox(object[h][i].bounds,GREEN);
+                        }
+                        
+                    }
+                }
+              
+                DrawGrid(50, 10.0f);         // Draw a grid
+
              
             EndMode3D();
 
-            if (selected != 3) 
+            //GUI
+            if(isGUIOpen)
             {
-                DrawText("MODEL SELECTED", GetScreenWidth() - 110, 10, 10, GREEN);
+                
+                DrawLine(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight(), Fade(LIGHTGRAY, 0.6f));
+                DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth()/4, GetScreenHeight(), Fade(LIGHTGRAY, 0.3f));
+
+
+                //Set Color
+                object[selectedType][selectedId].color.r = (int)GuiSliderBar((Rectangle){ 1000, 90, 105, 20 }, "Red", NULL, object[selectedType][selectedId].color.r, 0, 255);
+                object[selectedType][selectedId].color.g = (int)GuiSliderBar((Rectangle){ 1000, 120, 105, 20 }, "Green", NULL, object[selectedType][selectedId].color.g, 0, 255);
+                object[selectedType][selectedId].color.b = (int)GuiSliderBar((Rectangle){ 1000, 150, 105, 20 }, "Blue",NULL, object[selectedType][selectedId].color.b, 0, 255);
 
             }
-            DrawText("(c) Castle 3D model by Alberto Cano", screenWidth - 200, screenHeight - 20, 10, GRAY);
+            
+            
+            // if (currentlySelecting) 
+            // {
+            //     DrawText("1", GetScreenWidth() - 110, 10, 30, GREEN);
 
+            // }
+            
             DrawFPS(10, 10);
 
         EndDrawing();
@@ -150,9 +273,9 @@ int main(void)
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    UnloadTexture(texture);     // Unload texture
-    UnloadModel(model[0]); 
-    UnloadModel(model[1]);        // Unload model
+    //UnloadTexture(texture);     // Unload texture
+    //UnloadModel(model[0]); 
+    //UnloadModel(model[1]);        // Unload model
 
     CloseWindow();              // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
