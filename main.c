@@ -83,7 +83,9 @@ int main(void)
     //Declare Object
     struct objectData object[totalType][totalID];
 
+    //--------------------------------------------------------
     // set Object's default values
+    //--------------------------------------------------------
     for(int h = 0; h < totalType; h++)
     {
         for (int i = 0; i < totalID; i++)
@@ -94,7 +96,9 @@ int main(void)
         }
     }
     
+    //--------------------------------------------------------
     //Load Models
+    //--------------------------------------------------------
     //Tables
     Model tempModel;
 
@@ -111,51 +115,38 @@ int main(void)
     object[1][0].model = tempModel; 
     object[1][0].isEmpty = false; 
     object[1][0].isSelected = false; 
-    object[1][0].scale = 10;
+    object[1][0].scale = 2;
 
-    //tempModel2 = LoadModel("models/controller.obj");
-    // object[2][0].model = tempModel; 
-    // object[2][0].isEmpty = false; 
-    // object[2][0].scale = 10;
-
-    // tempModel = LoadModel("models/projector.obj");
-    // object[3][0].model = tempModel; 
-    // object[3][0].isEmpty = false; 
-    // object[3][0].scale = 10;
-
-    // tempModel = LoadModel("models/dustbin.obj");
-    // object[4][0].model = tempModel; 
-    // object[4][0].isEmpty = false; 
-    // object[4][0].scale = 10;
-
-
-
+    //--------------------------------------------------------
     //Loads Texture
-    Texture2D tempTexture; 
+    //--------------------------------------------------------
+    // Texture2D tempTexture; 
 
-    tempTexture = LoadTexture("texture/table.png");
-    object[0][0].model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = tempTexture; 
+    // tempTexture = LoadTexture("texture/table.png");
+    // object[0][0].model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = tempTexture; 
 
     
-    tempTexture = LoadTexture("texture/laptop.png");
+    // tempTexture = LoadTexture("texture/laptop.png");
     //object[1][0].model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = tempTexture; 
     
-    
+    //--------------------------------------------------------
     // Set model position
+    //--------------------------------------------------------
     object[0][0].position = (Vector3){-10,6,30};
     object[0][1].position = (Vector3){-10,6,0};
     object[0][2].position = (Vector3){-10,6,-30};
 
-    object[1][0].position = (Vector3){-10,6,30};
+    object[1][0].position = (Vector3){-10,12,30};
 
-
+    //--------------------------------------------------------
     // Set model Size (for bounding box)
+    //--------------------------------------------------------
     for (int i = 0; i < totalTable; i++)
     {
-        object[0][i].size = (Vector3){15,15,20};
+        object[0][i].size = (Vector3){15,12,20};
     }
 
-    object[1][0].size = (Vector3){15,15,20};
+    object[1][0].size = (Vector3){10,8,10};
     
 
     
@@ -184,6 +175,10 @@ int main(void)
                     object[h][i].bounds = (BoundingBox){(Vector3){ object[h][i].position.x -  object[h][i].size.x/2,  object[h][i].position.y - object[h][i].size.y/2,  object[h][i].position.z -  object[h][i].size.z/2 },
                                             (Vector3){ object[h][i].position.x +  object[h][i].size.x/2,  object[h][i].position.y +  object[h][i].size.y/2,  object[h][i].position.z +  object[h][i].size.z/2 }};     
                 }
+                else
+                {
+                    object[h][i].bounds =(BoundingBox){0,0};
+                }
             }
         }
            
@@ -201,18 +196,20 @@ int main(void)
 
             if(!(mouseInGUI && isGUIOpen))
             {
+                
+                selectedType = 0;
+                selectedId = 0;
+        
                 bool foundModel = false; //to avoid higlighting multiple objects
                 isGUIOpen = false;
                 currentlySelecting = false;
                 for(int h = 0; h < totalType; h++)
                 {
-                    for(int i = 0; i < totalType; i++)
+                    for(int i = 0; i < totalID; i++)
                     {
                         if(GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), object[h][i].bounds).hit && !foundModel)
                         {
                             object[h][i].isSelected = true;
-
-                           
 
                             selectedType = h;
                             selectedId = i;
@@ -234,23 +231,33 @@ int main(void)
         //Moving Objects
         if (currentlySelecting)
         {
+            double moveSpeed = 0.3;
             if (IsKeyDown(KEY_W))
             {
-                object[selectedType][selectedId].position.z++;
+                object[selectedType][selectedId].position.z = object[selectedType][selectedId].position.z + moveSpeed;
             }
             else if(IsKeyDown(KEY_S))
             {
-                object[selectedType][selectedId].position.z--;
+                object[selectedType][selectedId].position.z =  object[selectedType][selectedId].position.z - moveSpeed;
             }
         
         
             if (IsKeyDown(KEY_A))
             {
-                object[selectedType][selectedId].position.x++;
+                object[selectedType][selectedId].position.x = object[selectedType][selectedId].position.x + moveSpeed;
             }
             else if(IsKeyDown(KEY_D))
             {
-                object[selectedType][selectedId].position.x--;
+                object[selectedType][selectedId].position.x = object[selectedType][selectedId].position.x - moveSpeed;
+            }
+
+            if (IsKeyDown(KEY_LEFT_SHIFT))
+            {
+                object[selectedType][selectedId].position.y = object[selectedType][selectedId].position.y + moveSpeed;
+            }
+            else if(IsKeyDown(KEY_LEFT_CONTROL))
+            {
+                object[selectedType][selectedId].position.y = object[selectedType][selectedId].position.y - moveSpeed;
             }
         }
        
@@ -286,14 +293,16 @@ int main(void)
                             DrawModel(object[h][i].model,object[h][i].position,object[h][i].scale,object[h][i].color);
                             DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
                         
-                            //if(object[h][i].isSelected)
-                            //{
+                            if(object[h][i].isSelected)
+                            {
                                 DrawBoundingBox(object[h][i].bounds,GREEN);
-                           // }
+                            }
                         }
                         
                     }
                 }
+
+                
               
                 DrawGrid(50, 10.0f);         // Draw a grid
                 
@@ -303,7 +312,7 @@ int main(void)
             if(isGUIOpen)
             {
                 
-               // DrawLine(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight(), Fade(LIGHTGRAY, 0.6f));
+               //DrawLine(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight(), Fade(LIGHTGRAY, 0.6f));
                 DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth()/4, GetScreenHeight()/2, Fade(LIGHTGRAY, 0.3f));
 
                 DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(GRAY, 0.3f));
@@ -317,9 +326,6 @@ int main(void)
             
             DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(WHITE, 1));
             (int)GuiSpinner((Rectangle){ 1100, 550, 105, 20 }, "Select Type", &selectNum, 0, 5, false);
-
-             DrawText(TextFormat("Integer value: %d", selectedType), GetScreenWidth() - 300, 10, 30, BLACK);
-                 DrawText(TextFormat("Integer value: %d", selectedId), GetScreenWidth() - 300, 50, 30, BLACK);
 
             if (GuiButton((Rectangle){ 1100, 600, 105, 20 }, GuiIconText(ICON_HAND_POINTER, "ADD Objects")))
             {
@@ -340,21 +346,30 @@ int main(void)
                 if(selectNum == 0)
                 {
                     //DrawText(TextFormat("Integer value: %d", selectedSlot), GetScreenWidth() - 300, 10, 30, BLACK);
-                    //DrawText("Integer value: %d", selectNum, GetScreenWidth() - 110, 10, 30, BLACK);
                     tempModel = LoadModel("models/table.obj");   
-                    object[0][selectedSlot].model = tempModel; 
-                    object[0][selectedSlot].scale = 0.1f;
-                    object[0][selectedSlot].isEmpty = false;  
+                    object[selectNum][selectedSlot].model = tempModel; 
+                    object[selectNum][selectedSlot].scale = 0.1f;
+                    object[selectNum][selectedSlot].isEmpty = false;  
 
-                    object[0][selectedSlot].position = (Vector3){1,6,1};   
-                    object[0][selectedSlot].size = (Vector3){15,15,20};           
+                    object[selectNum][selectedSlot].position = (Vector3){1,6,1};   
+                    object[selectNum][selectedSlot].size = (Vector3){15,15,20};           
+                }
+                else if(selectNum == 1)
+                {
+                    tempModel = LoadModel("models/table.obj");   
+                    object[selectNum][selectedSlot].model = tempModel; 
+                    object[selectNum][selectedSlot].scale = 0.1f;
+                    object[selectNum][selectedSlot].isEmpty = false;  
+
+                    object[selectNum][selectedSlot].position = (Vector3){1,6,1};   
+                    object[selectNum][selectedSlot].size = (Vector3){15,15,20};           
                 }
             }
             
             // if (currentlySelecting) 
             // {
-            //     
-               // DrawText("1", GetScreenWidth() - 110, 10, 30, GREEN);
+                
+            //    DrawText("1", GetScreenWidth() - 110, 10, 30, GREEN);
             // }
             
             DrawFPS(10, 10);
