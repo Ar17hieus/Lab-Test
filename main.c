@@ -103,10 +103,10 @@ int main(void)
     }
     
 
-    tempModel = LoadModel("models/laptop.obj");
+    //tempModel = LoadModel("models/trashcan.obj");
     object[1][0].model = tempModel; 
     object[1][0].isEmpty = false; 
-    object[1][0].scale = 10;
+    object[1][0].scale = 1;
 
     //tempModel2 = LoadModel("models/controller.obj");
     // object[2][0].model = tempModel; 
