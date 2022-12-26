@@ -317,15 +317,29 @@ int main(void)
 
             if (GuiButton((Rectangle){ 1100, 600, 105, 20 }, GuiIconText(ICON_HAND_POINTER, "ADD Objects")))
             {
-
+                int currentSlot = 0;
+                int selectedSlot;
+                bool slotFound = false;
                 //Find Empty Slot
-                for (int i = 0; i < totalID; i++)
+                while(currentSlot < totalID && !slotFound )
                 {
-                    
-
+                    if(object[selectNum][currentSlot].isEmpty)
+                    {
+                        slotFound = true;
+                        selectedSlot = currentSlot;
+                    }
+                    currentSlot++;
                 }
 
+                if(selectNum == 0)
+                {
+                    tempModel = LoadModel("models/table.obj");   
+                    object[0][selectedSlot].model = tempModel; 
+                    object[0][selectedSlot].scale = 0.1f;
+                    object[0][selectedSlot].isEmpty = false;  
 
+                    object[0][selectedSlot].position = (Vector3){1,6,1};              
+                }
             }
             
             // if (currentlySelecting) 
