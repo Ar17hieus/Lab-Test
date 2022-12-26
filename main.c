@@ -80,7 +80,8 @@ int main(void)
     //total Objects
     int totalType = 5; //Increment if add new type of models
     int totalID = 10;
-    int totalTable = 3;
+    int totalTable = 6;
+    int totalChair= 6;
 
     //Declare Object
     struct objectData object[totalType][totalID];
@@ -118,15 +119,19 @@ int main(void)
     object[1][0].isEmpty = false; 
     object[1][0].isSelected = false; 
     object[1][0].scale = 2;
-
-
-
+    
+   
+   
     tempModel = LoadModel("models/chair.obj");
-    object[1][0].model = tempModel; 
-    object[1][0].model.transform = MatrixRotateXYZ((Vector3){ 0, 80.2, 0 });
-    object[1][0].isEmpty = false; 
-    object[1][0].isSelected = false; 
-    object[1][0].scale = 0.2;
+    for(int i = 0; i<totalChair; i++)
+    {
+        object[2][i].model = tempModel; 
+        object[2][i].model.transform = MatrixRotateXYZ((Vector3){ 0, 80.2, 0 });
+        object[2][i].isEmpty = false; 
+        object[2][i].isSelected = false; 
+        object[2][i].scale = 0.17;
+    }
+    
 
     //--------------------------------------------------------
     //Loads Texture
@@ -147,8 +152,21 @@ int main(void)
     object[0][1].position = (Vector3){-10,6,0};
     object[0][2].position = (Vector3){-10,6,-30};
 
+    object[0][3].position = (Vector3){25,6,30};
+    object[0][4].position = (Vector3){25,6,0};
+    object[0][5].position = (Vector3){25,6,-30};
+
     object[1][0].position = (Vector3){-10,12,30};
 
+
+    object[2][0].position = (Vector3){5,10,30};
+    object[2][1].position = (Vector3){5,10,0};
+    object[2][2].position = (Vector3){5,10,-30};
+
+    object[2][3].position = (Vector3){20,10,30};
+    object[2][4].position = (Vector3){20,10,0};
+    object[2][5].position = (Vector3){20,10,-30};
+    
     //--------------------------------------------------------
     // Set model Size (for bounding box)
     //--------------------------------------------------------
@@ -161,8 +179,7 @@ int main(void)
     
 
     
-  
-    SetCameraMode(camera, CAMERA_FREE);     // Set a free camera mode
+    //SetCameraMode(camera, CAMERA_FREE);     // Set a free camera mode
 
     
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
