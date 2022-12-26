@@ -230,7 +230,7 @@ int main(void)
         object[0][i].color = BROWN;
     }
 
-    object[1][0].color = GRAY;
+    object[1][0].color = DARKBLUE;
     
 
     for (int i = 0; i < totalChair; i++)
@@ -504,7 +504,7 @@ int main(void)
                     object[selectNum][selectedSlot].position = (Vector3){20,20,20};   
                     object[selectNum][selectedSlot].size = (Vector3){10,8,10}; 
 
-                    object[selectNum][selectedSlot].color = GRAY;           
+                    object[selectNum][selectedSlot].color = DARKBLUE;           
                 }
                 else if(selectNum == 2)
                 {
