@@ -45,6 +45,10 @@ int main(void)
     int selectedId = 0;
     bool currentlySelecting = false;
     bool isGUIOpen = false;
+    int selectNum = 0;
+
+
+
 
     /** ======================================================================
     INFO
@@ -103,7 +107,7 @@ int main(void)
     }
     
 
-    tempModel = LoadModel("models/chair.obj");
+    tempModel = LoadModel("models/laptop.obj");
     object[1][0].model = tempModel; 
     object[1][0].isEmpty = false; 
     object[1][0].scale = 10;
@@ -293,9 +297,6 @@ int main(void)
             EndMode3D();
 
             //GUI
-
-            DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(GRAY, 1));
-
             if(isGUIOpen)
             {
                 
@@ -311,11 +312,26 @@ int main(void)
 
             }
             
+            DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(WHITE, 1));
+            (int)GuiSpinner((Rectangle){ 1100, 550, 105, 20 }, "Select Type", &selectNum, 0, 5, false);
+
+            if (GuiButton((Rectangle){ 1100, 600, 105, 20 }, GuiIconText(ICON_HAND_POINTER, "ADD Objects")))
+            {
+
+                //Find Empty Slot
+                for (int i = 0; i < totalID; i++)
+                {
+                    
+
+                }
+
+
+            }
             
             // if (currentlySelecting) 
             // {
-            //     DrawText("1", GetScreenWidth() - 110, 10, 30, GREEN);
-
+            //     
+               // DrawText("1", GetScreenWidth() - 110, 10, 30, GREEN);
             // }
             
             DrawFPS(10, 10);
