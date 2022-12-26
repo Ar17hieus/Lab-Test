@@ -48,8 +48,7 @@ int main(void)
     bool isGUIOpen = false;
     int selectNum = 0;
     int cameraType = 1;
-
-
+    bool enableWireframe;
 
 
     /** ======================================================================
@@ -74,13 +73,15 @@ int main(void)
     [2] - Chair
     [3] - Projector
     [4] - Lamp
+    [5] - TrashCan
+    [6] - Board
     ======================================================================**/
 
 
     //total Objects
-    int totalType = 5; //Increment if add new type of models
+    int totalType = 7; //Increment if add new type of models
     int totalID = 10;
-    int totalTable = 6;
+    int totalTable = 7;
     int totalChair= 6;
 
     //Declare Object
@@ -133,18 +134,34 @@ int main(void)
     }
     
 
-    //--------------------------------------------------------
-    //Loads Texture
-    //--------------------------------------------------------
-    // Texture2D tempTexture; 
-
-    // tempTexture = LoadTexture("texture/table.png");
-    // object[0][0].model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = tempTexture; 
-
+    tempModel = LoadModel("models/projector.obj");
+    object[3][0].model = tempModel; 
+    object[3][0].isEmpty = false; 
+    object[3][0].isSelected = false; 
+    object[3][0].scale = 0.3;
     
-    // tempTexture = LoadTexture("texture/laptop.png");
-    //object[1][0].model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = tempTexture; 
-    
+
+    tempModel = LoadModel("models/lamp.obj");
+    object[4][0].model = tempModel; 
+    object[4][0].isEmpty = false; 
+    object[4][0].isSelected = false; 
+    object[4][0].scale = 0.4;
+
+
+    tempModel = LoadModel("models/trashcan.obj");
+    object[5][0].model = tempModel; 
+    object[5][0].isEmpty = false; 
+    object[5][0].isSelected = false; 
+    object[5][0].scale = 0.05;
+
+
+    tempModel = LoadModel("models/board.obj");
+    object[6][0].model = tempModel; 
+    object[6][0].isEmpty = false; 
+    object[6][0].isSelected = false; 
+    object[6][0].scale = 0.3;
+
+
     //--------------------------------------------------------
     // Set model position
     //--------------------------------------------------------
@@ -156,6 +173,9 @@ int main(void)
     object[0][4].position = (Vector3){25,6,0};
     object[0][5].position = (Vector3){25,6,-30};
 
+    object[0][6].position = (Vector3){-30,6,-35};
+
+    
     object[1][0].position = (Vector3){-10,12,30};
 
 
@@ -163,10 +183,19 @@ int main(void)
     object[2][1].position = (Vector3){5,10,0};
     object[2][2].position = (Vector3){5,10,-30};
 
-    object[2][3].position = (Vector3){20,10,30};
-    object[2][4].position = (Vector3){20,10,0};
-    object[2][5].position = (Vector3){20,10,-30};
-    
+    object[2][3].position = (Vector3){35,10,30};
+    object[2][4].position = (Vector3){35,10,0};
+    object[2][5].position = (Vector3){35,10,-30};
+
+
+    object[3][0].position = (Vector3){-33,13,-30};
+
+    object[4][0].position = (Vector3){-37,9,45};
+
+    object[5][0].position = (Vector3){43,1,-44};
+
+    object[6][0].position = (Vector3){-46,12,0};
+
     //--------------------------------------------------------
     // Set model Size (for bounding box)
     //--------------------------------------------------------
@@ -178,8 +207,47 @@ int main(void)
     object[1][0].size = (Vector3){10,8,10};
     
 
+    for (int i = 0; i < totalChair; i++)
+    {
+        object[2][i].size = (Vector3){10,8,10};
+    }
+
+    object[3][0].size = (Vector3){10,8,10};
     
-    //SetCameraMode(camera, CAMERA_FREE);     // Set a free camera mode
+    object[4][0].size = (Vector3){15,15,15};
+
+    object[5][0].size = (Vector3){10,10,10};
+
+    object[6][0].size = (Vector3){20,30,20};
+
+
+    //--------------------------------------------------------
+    // Set model Size (for bounding box)
+    //--------------------------------------------------------
+
+    for (int i = 0; i < totalTable; i++)
+    {
+        object[0][i].color = BROWN;
+    }
+
+    object[1][0].color = GRAY;
+    
+
+    for (int i = 0; i < totalChair; i++)
+    {
+        object[2][i].color = LIGHTGRAY ;
+    }
+
+    object[3][0].color = GRAY;
+    
+    object[4][0].color = MAROON;
+
+    object[5][0].color = LIGHTGRAY;
+
+    object[6][0].color = LIGHTGRAY;
+
+
+    SetCameraMode(camera, CAMERA_FREE);     // Set a free camera mode
 
     
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -284,23 +352,23 @@ int main(void)
         if (currentlySelecting)
         {
             double moveSpeed = 0.3;
-            if (IsKeyDown(KEY_W))
-            {
-                object[selectedType][selectedId].position.z = object[selectedType][selectedId].position.z + moveSpeed;
-            }
-            else if(IsKeyDown(KEY_S))
-            {
-                object[selectedType][selectedId].position.z =  object[selectedType][selectedId].position.z - moveSpeed;
-            }
-        
-        
-            if (IsKeyDown(KEY_A))
+            if (IsKeyDown(KEY_UP))
             {
                 object[selectedType][selectedId].position.x = object[selectedType][selectedId].position.x + moveSpeed;
             }
-            else if(IsKeyDown(KEY_D))
+            else if(IsKeyDown(KEY_DOWN))
             {
-                object[selectedType][selectedId].position.x = object[selectedType][selectedId].position.x - moveSpeed;
+                object[selectedType][selectedId].position.x =  object[selectedType][selectedId].position.x - moveSpeed;
+            }
+        
+        
+            if (IsKeyDown(KEY_LEFT))
+            {
+                object[selectedType][selectedId].position.z = object[selectedType][selectedId].position.z + moveSpeed;
+            }
+            else if(IsKeyDown(KEY_RIGHT))
+            {
+                object[selectedType][selectedId].position.z = object[selectedType][selectedId].position.z - moveSpeed;
             }
 
             if (IsKeyDown(KEY_LEFT_SHIFT))
@@ -326,11 +394,11 @@ int main(void)
                 DrawCubeWires((Vector3){0,1,0},100,1,100,BLACK);
 
                 //Wall 1
-                DrawCube((Vector3){-50,26.5,1},5,50,97,WHITE);
+                DrawCube((Vector3){-50,26.5,1},5,50,97,BEIGE);
                 DrawCubeWires((Vector3){-50,26.5,1},5,50,97,BLACK);
 
                 //Wall 2
-                DrawCube((Vector3){1,26.5,-50},96.9,50,5,WHITE);
+                DrawCube((Vector3){1,26.5,-50},96.9,50,5,BEIGE);
                 DrawCubeWires((Vector3){1,26.5,-50},96.9,50,5,BLACK);
 
 
@@ -343,8 +411,13 @@ int main(void)
                         if(!object[h][i].isEmpty)
                         {
                             DrawModel(object[h][i].model,object[h][i].position,object[h][i].scale,object[h][i].color);
-                            DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
-                        
+
+                            if(enableWireframe)
+                            {
+                                DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
+
+                            }
+
                             if(object[h][i].isSelected)
                             {
                                 DrawBoundingBox(object[h][i].bounds,GREEN);
@@ -354,9 +427,7 @@ int main(void)
                     }
                 }
 
-                
-              
-                DrawGrid(50, 10.0f);         // Draw a grid
+                DrawGrid(50, 10.0f);        // Draw a grid
                 
             EndMode3D();
 
@@ -364,23 +435,26 @@ int main(void)
             if(isGUIOpen)
             {
                 
-               //DrawLine(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight(), Fade(LIGHTGRAY, 0.6f));
                 DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth()/4, GetScreenHeight()/2, Fade(LIGHTGRAY, 0.3f));
 
                 DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(GRAY, 0.3f));
 
                 //Set Color
+                DrawText("Change Color", 980, 50, 19, BLACK);
                 object[selectedType][selectedId].color.r = (int)GuiSliderBar((Rectangle){ 1000, 90, 105, 20 }, "Red", NULL, object[selectedType][selectedId].color.r, 0, 255);
                 object[selectedType][selectedId].color.g = (int)GuiSliderBar((Rectangle){ 1000, 120, 105, 20 }, "Green", NULL, object[selectedType][selectedId].color.g, 0, 255);
                 object[selectedType][selectedId].color.b = (int)GuiSliderBar((Rectangle){ 1000, 150, 105, 20 }, "Blue",NULL, object[selectedType][selectedId].color.b, 0, 255);
-                DrawText("Press shift to change height", 980, 280, 19, BLACK);
-                DrawText("Press control to change height", 980, 300, 19, BLACK);
+                DrawText("Arrow Key to Move Object", 980, 260, 19, BLACK);
+                DrawText("Press shift to Increase height", 980, 280, 19, BLACK);
+                DrawText("Press control to Lower height", 980, 300, 19, BLACK);
 
             }
             
             DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(WHITE, 1));
+
+            enableWireframe =  GuiCheckBox((Rectangle){ 1000, 600, 20, 20 }, "Enable Wire frame:", enableWireframe);
             
-            (int)GuiSpinner((Rectangle){ 1100, 570, 105, 20 }, "Select Type", &selectNum, 0, 5, false);
+            (int)GuiSpinner((Rectangle){ 1100, 630, 105, 20 }, "Select Type", &selectNum, 0, 5, false);
             
             DrawText("W,A,S,D for Movement", 1000, 400, 19, BLACK);
             DrawText("Press 'C' to change camera", 1000, 420, 19, BLACK);
@@ -389,12 +463,15 @@ int main(void)
             DrawText("2. Chair", 1000, 500, 15, BLACK);
             DrawText("3. Projector", 1000, 520, 15, BLACK);
             DrawText("4. Lamp", 1000, 540, 15, BLACK);
-            
-            if (GuiButton((Rectangle){ 1100, 600, 105, 20 }, GuiIconText(ICON_HAND_POINTER, "ADD Objects")))
+            DrawText("5. Trash Can", 1000, 560, 15, BLACK);
+
+
+            if (GuiButton((Rectangle){ 1100, 660, 105, 20 }, GuiIconText(ICON_HAND_POINTER, "ADD Objects")))
             {
                 int currentSlot = 0;
                 int selectedSlot;
                 bool slotFound = false;
+
                 //Find Empty Slot
                 while(currentSlot < totalID && !slotFound )
                 {
@@ -408,33 +485,78 @@ int main(void)
 
                 if(selectNum == 0)
                 {
-                    //DrawText(TextFormat("%d", selectedSlot), GetScreenWidth() - 300, 10, 30, BLACK);
                     tempModel = LoadModel("models/table.obj");   
                     object[selectNum][selectedSlot].model = tempModel; 
                     object[selectNum][selectedSlot].scale = 0.1f;
                     object[selectNum][selectedSlot].isEmpty = false;  
 
-                    object[selectNum][selectedSlot].position = (Vector3){1,6,1};   
-                    object[selectNum][selectedSlot].size = (Vector3){15,15,20};           
+                    object[selectNum][selectedSlot].position = (Vector3){20,20,20};   
+                    object[selectNum][selectedSlot].size = (Vector3){15,15,20};    
+                    object[selectNum][selectedSlot].color = BROWN;       
                 }
                 else if(selectNum == 1)
                 {
-                    tempModel = LoadModel("models/table.obj");   
+                    tempModel = LoadModel("models/laptop.obj");   
                     object[selectNum][selectedSlot].model = tempModel; 
-                    object[selectNum][selectedSlot].scale = 0.1f;
+                    object[selectNum][selectedSlot].scale = 2;
                     object[selectNum][selectedSlot].isEmpty = false;  
 
-                    object[selectNum][selectedSlot].position = (Vector3){1,6,1};   
-                    object[selectNum][selectedSlot].size = (Vector3){15,15,20};           
+                    object[selectNum][selectedSlot].position = (Vector3){20,20,20};   
+                    object[selectNum][selectedSlot].size = (Vector3){10,8,10}; 
+
+                    object[selectNum][selectedSlot].color = GRAY;           
                 }
+                else if(selectNum == 2)
+                {
+                    tempModel = LoadModel("models/chair.obj"); 
+                    object[selectNum][selectedSlot].model = tempModel; 
+                    object[selectNum][selectedSlot].scale = 0.17;
+                    object[selectNum][selectedSlot].isEmpty = false;  
+
+                    object[selectNum][selectedSlot].position = (Vector3){20,20,20};   
+                    object[selectNum][selectedSlot].size = (Vector3){10,8,10};    
+                    object[selectNum][selectedSlot].model.transform = MatrixRotateXYZ((Vector3){ 0, 80.2, 0 });
+
+                    object[selectNum][selectedSlot].color = LIGHTGRAY; 
+                }
+                else if(selectNum == 3)
+                {
+                    tempModel = LoadModel("models/projector.obj"); 
+                    object[selectNum][selectedSlot].model = tempModel; 
+                    object[selectNum][selectedSlot].scale = 0.3;
+                    object[selectNum][selectedSlot].isEmpty = false;  
+
+                    object[selectNum][selectedSlot].position = (Vector3){20,20,20};   
+                    object[selectNum][selectedSlot].size = (Vector3){10,8,10};  
+
+                    object[selectNum][selectedSlot].color = GRAY;  
+                }
+                else if(selectNum == 4)
+                {
+                    tempModel = LoadModel("models/lamp.obj"); 
+                    object[selectNum][selectedSlot].model = tempModel; 
+                    object[selectNum][selectedSlot].scale = 0.4;
+                    object[selectNum][selectedSlot].isEmpty = false;  
+
+                    object[selectNum][selectedSlot].position = (Vector3){20,20,20};   
+                    object[selectNum][selectedSlot].size = (Vector3){15,15,15};   
+
+                    object[selectNum][selectedSlot].color = MAROON; 
+                }
+                else if(selectNum == 5)
+                {
+                    tempModel = LoadModel("models/trashcan.obj"); 
+                    object[selectNum][selectedSlot].model = tempModel; 
+                    object[selectNum][selectedSlot].scale = 0.05;
+                    object[selectNum][selectedSlot].isEmpty = false;  
+
+                    object[selectNum][selectedSlot].position = (Vector3){20,20,20};   
+                    object[selectNum][selectedSlot].size = (Vector3){10,10,10};  
+
+                    object[selectNum][selectedSlot].color = LIGHTGRAY;  
+                }
+                    
             }
-            
-            // if (currentlySelecting) 
-            // {
-                
-            //    DrawText("1", GetScreenWidth() - 110, 10, 30, GREEN);
-            // }
-            
             DrawFPS(10, 10);
 
         EndDrawing();
