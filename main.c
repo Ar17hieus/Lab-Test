@@ -360,8 +360,11 @@ int main(void)
             }
             
             DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(WHITE, 1));
+            
             (int)GuiSpinner((Rectangle){ 1100, 550, 105, 20 }, "Select Type", &selectNum, 0, 5, false);
-
+            
+            DrawText("W,A,S,D for Movement", 1000, 400, 19, BLACK);
+            DrawText("Press 'C' to change camera", 1000, 420, 19, BLACK);
             if (GuiButton((Rectangle){ 1100, 600, 105, 20 }, GuiIconText(ICON_HAND_POINTER, "ADD Objects")))
             {
                 int currentSlot = 0;
