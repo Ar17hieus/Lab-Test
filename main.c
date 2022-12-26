@@ -47,6 +47,7 @@ int main(void)
     bool currentlySelecting = false;
     bool isGUIOpen = false;
     int selectNum = 0;
+    int cameraType = 1;
 
 
 
@@ -192,7 +193,31 @@ int main(void)
             }
         }
            
+        //Camera option
+        if (IsKeyPressed(KEY_C))
+        {
+            if (cameraType == 1)
+            {
+                cameraType = 2;
+                camera.position = (Vector3){ 20.0f, 20.0f, 5.0f }; // Camera position
+                camera.target = (Vector3){ -10.0f, 10.0f, 0.0f };     // Camera looking at point
+                camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+                camera.fovy = 60.0f;                                // Camera field-of-view Y
+                camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
+                SetCameraMode(camera, CAMERA_FIRST_PERSON);     // Set a fps camera mode    
+            }
 
+            else if (cameraType == 2)
+            {
+                cameraType = 1;
+                camera.position = (Vector3){ 50.0f, 50.0f, 50.0f }; // Camera position
+                camera.target = (Vector3){ 0.0f, 10.0f, 0.0f };     // Camera looking at point
+                camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+                camera.fovy = 45.0f;                                // Camera field-of-view Y
+                camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
+                SetCameraMode(camera, CAMERA_FREE);     // Set a free camera mode                 
+            }
+        }
     
         //Select Object
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
