@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "raygui.h"
+#include "raymath.h"
 
 struct objectData
 {
@@ -69,9 +70,9 @@ int main(void)
     Current Models
     [0] - Tables
     [1] - Laptop
-    [2] - Controller
+    [2] - Chair
     [3] - Projector
-    [4] - DustBin
+    [4] - Lamp
     ======================================================================**/
 
 
@@ -116,6 +117,15 @@ int main(void)
     object[1][0].isEmpty = false; 
     object[1][0].isSelected = false; 
     object[1][0].scale = 2;
+
+
+
+    tempModel = LoadModel("models/chair.obj");
+    object[1][0].model = tempModel; 
+    object[1][0].model.transform = MatrixRotateXYZ((Vector3){ 0, 80.2, 0 });
+    object[1][0].isEmpty = false; 
+    object[1][0].isSelected = false; 
+    object[1][0].scale = 0.2;
 
     //--------------------------------------------------------
     //Loads Texture
@@ -345,7 +355,7 @@ int main(void)
 
                 if(selectNum == 0)
                 {
-                    //DrawText(TextFormat("Integer value: %d", selectedSlot), GetScreenWidth() - 300, 10, 30, BLACK);
+                    //DrawText(TextFormat("%d", selectedSlot), GetScreenWidth() - 300, 10, 30, BLACK);
                     tempModel = LoadModel("models/table.obj");   
                     object[selectNum][selectedSlot].model = tempModel; 
                     object[selectNum][selectedSlot].scale = 0.1f;
