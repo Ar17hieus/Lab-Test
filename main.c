@@ -13,6 +13,7 @@ struct objectData
     Vector3 size;
     float scale;
     bool isSelected;
+    bool isEmpty;
 };
 
 
@@ -49,11 +50,12 @@ int main(void)
     INFO
     HOW TO ADD OBJECT
     1)Add variable to set max object
-    2)Load Models
-    3)Load Texture
-    4)Set Model's Default Position
-    5)Set Model's Size (Used to create bounding box)
-    6)Set Model's default value (for colors and isSelected)
+    2)Set Model's default value (for colors and isSelected)
+    3)Load Models
+    4)Load Texture
+    5)Set Model's Default Position
+    6)Set Model's Size (Used to create bounding box)
+    
   
     ARRAY GUIDE
     object[x][y];
@@ -62,15 +64,31 @@ int main(void)
 
     Current Models
     [0] - Tables
+    [1] - Laptop
+    [2] - Controller
+    [3] - Projector
+    [4] - DustBin
     ======================================================================**/
 
-    //Declare Object
-    struct objectData object[3][10];
 
     //total Objects
-    int totalType = 1; //Increment if add new type of models
+    int totalType = 5; //Increment if add new type of models
+    int totalID = 10;
     int totalTable = 3;
 
+    //Declare Object
+    struct objectData object[totalType][totalID];
+
+    // set Object's default values
+    for(int h = 0; h < totalType; h++)
+    {
+        for (int i = 0; i < totalID; i++)
+        {
+            object[h][i].color= WHITE;
+            object[h][i].isSelected= false;
+            object[h][i].isEmpty= true;
+        }
+    }
     
     //Load Models
     //Tables
@@ -81,14 +99,41 @@ int main(void)
     {
         object[0][i].model = tempModel; 
         object[0][i].scale = 0.1f;
+        object[0][i].isEmpty = false;
     }
     
 
-    //Loads Texture
-    Texture2D tempTexture = LoadTexture("resources/models/obj/castle_diffuse.png"); // Load model texture 1 
+    tempModel = LoadModel("models/laptop.obj");
+    object[1][0].model = tempModel; 
+    object[1][0].isEmpty = false; 
+    object[1][0].scale = 10;
 
-    tempTexture = LoadTexture("resources/table/tex/WoodSeemles1.png");
-    object[0][0].model.materials[0].maps[MATERIAL_MAP_OCCLUSION].texture = tempTexture; 
+    //tempModel2 = LoadModel("models/controller.obj");
+    // object[2][0].model = tempModel; 
+    // object[2][0].isEmpty = false; 
+    // object[2][0].scale = 10;
+
+    // tempModel = LoadModel("models/projector.obj");
+    // object[3][0].model = tempModel; 
+    // object[3][0].isEmpty = false; 
+    // object[3][0].scale = 10;
+
+    // tempModel = LoadModel("models/dustbin.obj");
+    // object[4][0].model = tempModel; 
+    // object[4][0].isEmpty = false; 
+    // object[4][0].scale = 10;
+
+
+
+    //Loads Texture
+    Texture2D tempTexture; 
+
+    tempTexture = LoadTexture("texture/table.png");
+    object[0][0].model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = tempTexture; 
+
+    
+    tempTexture = LoadTexture("texture/laptop.png");
+    //object[1][0].model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = tempTexture; 
     
     
     // Set model position
@@ -96,21 +141,19 @@ int main(void)
     object[0][1].position = (Vector3){-10,6,0};
     object[0][2].position = (Vector3){-10,6,-30};
 
+    object[1][0].position = (Vector3){-10,6,30};
+
 
     // Set model Size (for bounding box)
     for (int i = 0; i < totalTable; i++)
     {
         object[0][i].size = (Vector3){15,15,20};
     }
+
+    object[1][0].size = (Vector3){15,15,20};
     
 
-    // set Object's default values
-    for (int i = 0; i < totalTable; i++)
-    {
-        object[0][i].color= WHITE;
-        object[0][i].isSelected= false;
-    }
-
+    
   
     SetCameraMode(camera, CAMERA_FREE);     // Set a free camera mode
 
@@ -131,8 +174,11 @@ int main(void)
         {
             for(int i = 0; i < totalTable; i++)
             {
-                object[0][i].bounds = (BoundingBox){(Vector3){ object[h][i].position.x -  object[h][i].size.x/2,  object[h][i].position.y - object[h][i].size.y/2,  object[h][i].position.z -  object[h][i].size.z/2 },
-                                            (Vector3){ object[h][i].position.x +  object[h][i].size.x/2,  object[h][i].position.y +  object[h][i].size.y/2,  object[h][i].position.z +  object[h][i].size.z/2 }}; 
+                if(!object[h][i].isEmpty)
+                {
+                    object[h][i].bounds = (BoundingBox){(Vector3){ object[h][i].position.x -  object[h][i].size.x/2,  object[h][i].position.y - object[h][i].size.y/2,  object[h][i].position.z -  object[h][i].size.z/2 },
+                                            (Vector3){ object[h][i].position.x +  object[h][i].size.x/2,  object[h][i].position.y +  object[h][i].size.y/2,  object[h][i].position.z +  object[h][i].size.z/2 }};     
+                }
             }
         }
            
@@ -227,29 +273,36 @@ int main(void)
                 {
                     for(int i = 0; i < totalTable; i++)
                     {
-                        DrawModel(object[h][i].model,object[h][i].position,object[h][i].scale,object[h][i].color);
-                        DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
+                        
+                        if(!object[h][i].isEmpty)
+                        {
+                            DrawModel(object[h][i].model,object[h][i].position,object[h][i].scale,object[h][i].color);
+                            DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
                         
                         if(object[h][i].isSelected)
                         {
                             DrawBoundingBox(object[h][i].bounds,GREEN);
+                        }
                         }
                         
                     }
                 }
               
                 DrawGrid(50, 10.0f);         // Draw a grid
-
-             
+                
             EndMode3D();
 
             //GUI
+
+            DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(GRAY, 1));
+
             if(isGUIOpen)
             {
                 
-                DrawLine(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight(), Fade(LIGHTGRAY, 0.6f));
-                DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth()/4, GetScreenHeight(), Fade(LIGHTGRAY, 0.3f));
+               // DrawLine(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight(), Fade(LIGHTGRAY, 0.6f));
+                DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, 0, GetScreenWidth()/4, GetScreenHeight()/2, Fade(LIGHTGRAY, 0.3f));
 
+                DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(GRAY, 0.3f));
 
                 //Set Color
                 object[selectedType][selectedId].color.r = (int)GuiSliderBar((Rectangle){ 1000, 90, 105, 20 }, "Red", NULL, object[selectedType][selectedId].color.r, 0, 255);
