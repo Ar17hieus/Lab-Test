@@ -373,12 +373,23 @@ int main(void)
                 object[selectedType][selectedId].color.r = (int)GuiSliderBar((Rectangle){ 1000, 90, 105, 20 }, "Red", NULL, object[selectedType][selectedId].color.r, 0, 255);
                 object[selectedType][selectedId].color.g = (int)GuiSliderBar((Rectangle){ 1000, 120, 105, 20 }, "Green", NULL, object[selectedType][selectedId].color.g, 0, 255);
                 object[selectedType][selectedId].color.b = (int)GuiSliderBar((Rectangle){ 1000, 150, 105, 20 }, "Blue",NULL, object[selectedType][selectedId].color.b, 0, 255);
+                DrawText("Press shift to change height", 980, 280, 19, BLACK);
+                DrawText("Press control to change height", 980, 300, 19, BLACK);
 
             }
             
             DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(WHITE, 1));
-            (int)GuiSpinner((Rectangle){ 1100, 550, 105, 20 }, "Select Type", &selectNum, 0, 5, false);
-
+            
+            (int)GuiSpinner((Rectangle){ 1100, 570, 105, 20 }, "Select Type", &selectNum, 0, 5, false);
+            
+            DrawText("W,A,S,D for Movement", 1000, 400, 19, BLACK);
+            DrawText("Press 'C' to change camera", 1000, 420, 19, BLACK);
+            DrawText("0. Tables", 1000, 460, 15, BLACK);
+            DrawText("1. Laptop", 1000, 480, 15, BLACK);
+            DrawText("2. Chair", 1000, 500, 15, BLACK);
+            DrawText("3. Projector", 1000, 520, 15, BLACK);
+            DrawText("4. Lamp", 1000, 540, 15, BLACK);
+            
             if (GuiButton((Rectangle){ 1100, 600, 105, 20 }, GuiIconText(ICON_HAND_POINTER, "ADD Objects")))
             {
                 int currentSlot = 0;
