@@ -110,6 +110,7 @@ int main(void)
     tempModel = LoadModel("models/laptop.obj");
     object[1][0].model = tempModel; 
     object[1][0].isEmpty = false; 
+    object[1][0].isSelected = false; 
     object[1][0].scale = 10;
 
     //tempModel2 = LoadModel("models/controller.obj");
@@ -210,6 +211,9 @@ int main(void)
                         if(GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), object[h][i].bounds).hit && !foundModel)
                         {
                             object[h][i].isSelected = true;
+
+                           
+
                             selectedType = h;
                             selectedId = i;
                             currentlySelecting = true;
@@ -225,7 +229,7 @@ int main(void)
 
             }
         }
-        
+    
 
         //Moving Objects
         if (currentlySelecting)
@@ -256,7 +260,6 @@ int main(void)
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
-
             BeginMode3D(camera);
 
                 //Floor
@@ -283,10 +286,10 @@ int main(void)
                             DrawModel(object[h][i].model,object[h][i].position,object[h][i].scale,object[h][i].color);
                             DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
                         
-                            if(object[h][i].isSelected)
-                            {
+                            //if(object[h][i].isSelected)
+                            //{
                                 DrawBoundingBox(object[h][i].bounds,GREEN);
-                            }
+                           // }
                         }
                         
                     }
@@ -315,6 +318,9 @@ int main(void)
             DrawRectangle(GetScreenWidth() -  GetScreenWidth()/4, GetScreenHeight()/2, GetScreenWidth()/4, GetScreenHeight()/2, Fade(WHITE, 1));
             (int)GuiSpinner((Rectangle){ 1100, 550, 105, 20 }, "Select Type", &selectNum, 0, 5, false);
 
+             DrawText(TextFormat("Integer value: %d", selectedType), GetScreenWidth() - 300, 10, 30, BLACK);
+                 DrawText(TextFormat("Integer value: %d", selectedId), GetScreenWidth() - 300, 50, 30, BLACK);
+
             if (GuiButton((Rectangle){ 1100, 600, 105, 20 }, GuiIconText(ICON_HAND_POINTER, "ADD Objects")))
             {
                 int currentSlot = 0;
@@ -333,7 +339,7 @@ int main(void)
 
                 if(selectNum == 0)
                 {
-                    DrawText(TextFormat("Integer value: %d", selectedSlot), GetScreenWidth() - 300, 10, 30, BLACK);
+                    //DrawText(TextFormat("Integer value: %d", selectedSlot), GetScreenWidth() - 300, 10, 30, BLACK);
                     //DrawText("Integer value: %d", selectNum, GetScreenWidth() - 110, 10, 30, BLACK);
                     tempModel = LoadModel("models/table.obj");   
                     object[0][selectedSlot].model = tempModel; 
