@@ -176,7 +176,7 @@ int main(void)
         //Set bounding Box
         for(int h = 0; h< totalType; h++)
         {
-            for(int i = 0; i < totalTable; i++)
+            for(int i = 0; i < totalID ;i++)
             {
                 if(!object[h][i].isEmpty)
                 {
@@ -205,7 +205,7 @@ int main(void)
                 currentlySelecting = false;
                 for(int h = 0; h < totalType; h++)
                 {
-                    for(int i = 0; i < totalTable; i++)
+                    for(int i = 0; i < totalType; i++)
                     {
                         if(GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), object[h][i].bounds).hit && !foundModel)
                         {
@@ -275,7 +275,7 @@ int main(void)
                 //Draw Models
                 for(int h = 0; h< totalType; h++)
                 {
-                    for(int i = 0; i < totalTable; i++)
+                    for(int i = 0; i < totalID; i++)
                     {
                         
                         if(!object[h][i].isEmpty)
@@ -283,10 +283,10 @@ int main(void)
                             DrawModel(object[h][i].model,object[h][i].position,object[h][i].scale,object[h][i].color);
                             DrawModelWires(object[h][i].model,object[h][i].position,object[h][i].scale,BLACK);
                         
-                        if(object[h][i].isSelected)
-                        {
-                            DrawBoundingBox(object[h][i].bounds,GREEN);
-                        }
+                            if(object[h][i].isSelected)
+                            {
+                                DrawBoundingBox(object[h][i].bounds,GREEN);
+                            }
                         }
                         
                     }
@@ -333,12 +333,15 @@ int main(void)
 
                 if(selectNum == 0)
                 {
+                    DrawText(TextFormat("Integer value: %d", selectedSlot), GetScreenWidth() - 300, 10, 30, BLACK);
+                    //DrawText("Integer value: %d", selectNum, GetScreenWidth() - 110, 10, 30, BLACK);
                     tempModel = LoadModel("models/table.obj");   
                     object[0][selectedSlot].model = tempModel; 
                     object[0][selectedSlot].scale = 0.1f;
                     object[0][selectedSlot].isEmpty = false;  
 
-                    object[0][selectedSlot].position = (Vector3){1,6,1};              
+                    object[0][selectedSlot].position = (Vector3){1,6,1};   
+                    object[0][selectedSlot].size = (Vector3){15,15,20};           
                 }
             }
             
